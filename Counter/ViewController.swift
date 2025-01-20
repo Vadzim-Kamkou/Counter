@@ -6,31 +6,44 @@
 //
 
 import UIKit
-import Foundation
 
 class ViewController: UIViewController {
 
-    // Аутлеты
+    // MARK: - IB Outlets
     @IBOutlet weak var counterLabel: UILabel!
     @IBOutlet weak var counterButtonPlus: UIButton!
     @IBOutlet weak var counterButtonMinus: UIButton!
     @IBOutlet weak var counterButtonReset: UIButton!
     @IBOutlet weak var counterTextViewLog: UITextView!
-    
-    // Переменне
+ 
+    // MARK: - Private Properties
     private var counter:Int = 0
     private var log:String = ""
     
-    
-    // Устанавливаем значение счетчика 0, когда приложение загрузилось
+    // MARK: - Overrides Methods
     override func viewDidLoad() {
+       
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        counterLabel.text = "Значение счетчика: 0"
-        log = "История изменений: \n"
-        counterTextViewLog.text = log
-    }
 
+        // Если данных в UserDefaults нет, записываем начальные значения.
+        if UserDefaults.standard.string(forKey: "counterLabel") == nil {
+            counterLabel.text = "Значение счетчика: 0"
+            UserDefaults.standard.set(counterLabel.text, forKey: "counterLabel")
+        } else {
+            counterLabel.text = UserDefaults.standard.string(forKey: "counterLabel")
+        }
+        
+        if UserDefaults.standard.string(forKey: "counterLog") == nil {
+            log = "История изменений: \n"
+            UserDefaults.standard.set(log, forKey: "counterLabel")
+            counterTextViewLog.text = log
+        } else {
+            counterTextViewLog.text = UserDefaults.standard.string(forKey: "counterLog")
+        }
+
+    }
+    
+    // MARK: - IB Actions
     // Обрабатываем нажатие на кнопку увеличивающую значение счетчика на 1.
     @IBAction func counterButtonPlus(_ sender: Any) {
         counter = counter + 1
@@ -56,10 +69,13 @@ class ViewController: UIViewController {
         counterLabel.text = "Значение счетчика: \(counter)"
         counterLog(param: "значение сброшено \n")
         
-        //log = "История изменений: \n"
-        //counterTextViewLog.text = log
+        
+        UserDefaults.standard.removeObject(forKey: "counterLabel")
+        UserDefaults.standard.removeObject(forKey: "counterLog")
+        
     }
     
+    // MARK: - Private Methods
     private func counterLog(param: String) {
         
         // Определяем дату и время, форматируем и переводим в String
@@ -74,6 +90,16 @@ class ViewController: UIViewController {
         // Обновляем лог
         counterTextViewLog.text = log
       
+        // сохраняем
+        saveData()
+    }
+    
+    private func saveData() {
+
+        let counterLabel = self.counterLabel.text
+        let counterLog = self.log
+        
+        UserDefaults.standard.set(counterLabel, forKey: "counterLabel")
+        UserDefaults.standard.set(counterLog, forKey: "counterLog")
     }
 }
-
