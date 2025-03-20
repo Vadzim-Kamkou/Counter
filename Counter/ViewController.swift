@@ -40,6 +40,9 @@ class ViewController: UIViewController {
         } else {
             counterTextViewLog.text = UserDefaults.standard.string(forKey: "counterLog")
         }
+        
+        counterUpdate()
+        updateResetButton()
 
     }
     
@@ -49,6 +52,8 @@ class ViewController: UIViewController {
         counter = counter + 1
         counterLabel.text = "Значение счетчика: \(counter)"
         counterLog(param: "значение изменено на -1/+1 \n")
+        counterUpdate()
+        updateResetButton()
     }
     
     // Обрабатываем нажатие на кнопку уменьшающую значение счетчика на 1, но не ниже 0.
@@ -61,18 +66,15 @@ class ViewController: UIViewController {
         } else {
             counterLog(param: "попытка уменьшить значение счётчика ниже 0 \n")
         }
+        counterUpdate()
+        updateResetButton()
     }
     
     // Обрабатываем нажатие на кнопку сброса значения счетчика и лога
     @IBAction func counterButtonReset(_ sender: Any) {
         counter = 0
         counterLabel.text = "Значение счетчика: \(counter)"
-        counterLog(param: "значение сброшено \n")
-        
-        
-        UserDefaults.standard.removeObject(forKey: "counterLabel")
-        UserDefaults.standard.removeObject(forKey: "counterLog")
-        
+        counterLog(param: "значение сброшено \n")   
     }
     
     // MARK: - Private Methods
@@ -101,5 +103,21 @@ class ViewController: UIViewController {
         
         UserDefaults.standard.set(counterLabel, forKey: "counterLabel")
         UserDefaults.standard.set(counterLog, forKey: "counterLog")
+    }
+    
+    private func updateResetButton() {
+        if counter == 0 {
+            counterButtonReset.isEnabled = false
+        } else {
+            counterButtonReset.isEnabled = true
+        }
+    }
+    
+    private func counterUpdate() {
+        if counter > 10 || counter < -10 {
+            counter = 0
+            counterLabel.text = "Значение счетчика: \(counter)"
+            counterLog(param: "значение сброшено \n")
+        }
     }
 }
